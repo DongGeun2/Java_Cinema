@@ -4,7 +4,7 @@ public class Cinema_Main_Print {
         Cinema_Reservation cinema = new Cinema_Reservation();
         
         
-        cinema.presentSeat();
+        cinema.PrintTest();
         
         //cinema.PrintTest();
     }
