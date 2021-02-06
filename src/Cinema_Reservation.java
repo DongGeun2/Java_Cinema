@@ -4,9 +4,11 @@ import java.util.Scanner;
 public class Cinema_Reservation {
     static final int ROW = 4;
     static final int COL = 5;
-    private String[][] seat;
+    final int CANCLE = 3;           //취소 메뉴 선택시 상수
+    final int SELECT = 2;           //조회 메뉴 선택시 상수
+    private String[][] seat;        //예매 좌석 배열
     private String userChoice;
-    private String[][] seat2;
+    private String[][] seat2;       //예매번호 저장 배열
     private Scanner scanner;
     
     Cinema_Reservation(){
@@ -27,7 +29,7 @@ public class Cinema_Reservation {
         }
     }
 
-    public int menuChoice(){
+    private int menuChoice(){
 
         System.out.println("*********************************");
         System.out.println("**********영화예매 시스템**********");
@@ -38,46 +40,45 @@ public class Cinema_Reservation {
         System.out.println(" 3. 예매취소");
         System.out.println();
 
-        int menu=0;
+        int menu=0;     //메뉴 선택 변수
 
         while(true){
-            try {
+            try {       // 정수가 아닌 다른 값이 들어왔을때 처리하기 위한 try/catch
                 menu =  scanner.nextInt();
                 scanner.nextLine();
-                if (menu < 1 || menu > 3) {
+                if (menu < 1 || menu > 3) {     //만약 메뉴 번호에서 벗어났을때 처리
                     System.out.println("1~3의 번호만 입력해주세요.");
                 }
-                else{
+                else{                           //올바른 값을 입력하면 빠져나간다.
                     break;
                 }
             }
             catch(Exception e){
                 System.out.println("번호만 입력해 주세요.");
-                scanner.nextLine();
+                scanner.nextLine();   //  =>  nextLine()이 없으면 왜인지 모르겠으나 무한루프에 걸림.
             }
-
         }
-        return menu;
+        return menu;            //선택한 메뉴 번호를 리턴
 
     }
     public void menuCase(){
-        seatMake();
+        seatMake();    //  =>   배열 자리 만들기
         while(true) {
             switch (menuChoice()) {
                 case 1: {
-                    System.out.println("case 1");
+                    //메뉴 1번 좌석 예매
                     presentSeat();
                     break;
                 }
                 case 2: {
-                    System.out.println("case 2");
-                    System.out.println(selectSeatCheck());
+                    //메뉴 2번 좌석 예매 '조회'
+                    System.out.println(SeatCheck(SELECT));
                     break;
 
                 }
                 case 3: {
-                    System.out.println("case 3");
-                    System.out.println(cancleSeatCheck());
+                    //메뉴 3번 좌석 예매 '취소'
+                    System.out.println(SeatCheck(CANCLE));
                 }
             }
         }
@@ -128,7 +129,7 @@ public class Cinema_Reservation {
     }
     
     // 메뉴 1번
-    public void presentSeat() {
+    private void presentSeat() {
         while(true) {
             System.out.println("*******좌석 현황*******");
             seatGetNumber();
@@ -144,63 +145,28 @@ public class Cinema_Reservation {
             break;
         }
     }
-/*    public void PrintTest() {
-        seatMake();
-        while(true) {
-                System.out.println("1. 예약 2. 조회 3. 취소");
-                int choice = scanner.nextInt();
-                scanner.nextLine();
-                if(choice == 1) {
-                    presentSeat();
-                }else if(choice == 2) {
-                    System.out.println(selectSeatCheck());
-                }else if(choice == 3) {
-                    System.out.println(cancleSeatCheck());
-                }
-        }
-    }*/
 
     //메뉴 2번
-    //예매변화 확인 함수
-    public String selectSeatCheck(){
+    //예매번호 존재 확인 함수
+    private String SeatCheck(int select_cancle){        //Select 인지 Cancle인지 받아온다.
         System.out.println("예매번호를 입력해주세요.");
-        String numEqul=scanner.nextLine();
+        String numEqul=scanner.nextLine();              //예매번호 입력
 
+        //예매번호를 저장하는 배열에서 찾는다.
         for(int i = 0; i < seat2.length; i++) {
             for (int j = 0; j < seat2[i].length; j++) {
-                if(numEqul.equals(seat2[i][j])){
-                    return  selectSeatResult(i, j);
+                if(numEqul.equals(seat2[i][j])){        //예매번호 배열에 사용자가 입력한 값이 존재하면
+                    if(select_cancle==2){               //조회메뉴(2)를 눌렀을때
+                        return "고객님이 예매하신 좌석은 "+(i+1)+"-"+(j+1)+"입니다.\n\n";
+                    }
+                    else{                               //취소메뉴(3)를 눌렀을때
+                        return cancleSeatResult(i, j);  //해당 인덱스 파라미터로 넣고 취소해주는 함수 호출
+                    }
                 }
             }
         }
         //if문에 안걸렸을때 >> 예매 내역이 없다.
         return "예매된 내역이 없습니다...ㅜㅜ\n번호를 다시한번 확인해주세요!!\n\n";
-    }
-
-    //예매조회 출력 함수
-    private String selectSeatResult(int row, int col) {
-        return "고객님이 예매하신 좌석은 "+(row+1)+"-"+(col+1)+"입니다.\n\n";
-    }
-
-    //메뉴 3번
-    //좌석예매 취소 확인함수 >> 사용자가 입력한 예매번호가 존재하면 인덱스를 넘겨줌
-    private String cancleSeatCheck(){
-        String numEqul ="";
-
-        System.out.println("예매번호를 입력해주세요.");
-
-        numEqul = scanner.nextLine();
-
-
-        for(int i = 0; i < seat2.length; i++) {
-            for (int j = 0; j < seat2[i].length; j++) {
-                if(numEqul.equals(seat2[i][j])){
-                    return cancleSeatResult(i, j);
-                }
-            }
-        }
-        //if문에 안걸렸을때 >> 예매 내역이 없다.
-        return "예매된 내역이 없습니다...ㅜㅜ\n다시한번 확인해주세요!!\n\n";
     }
 
     // 좌석예매 취소 출력함수 >> row(행) col(열)을 파라미터로 받아와 처리
@@ -210,17 +176,16 @@ public class Cinema_Reservation {
         System.out.println("예매를 취소하시겠습니까??");
         System.out.println("네(1), 아니오(2)중 하나를 입력해주세요.");
 
-        int choice = scanner.nextInt();
+        int choice = scanner.nextInt();     //메뉴 선택 변수
 
-
-        if(choice == 1) {
-            seat2[row][col] = "null";
-            seat[row][col] = "0";
+        if(choice == 1) {                   //취소 할때
+            seat2[row][col] = "null";       //예매번호가 있는 배열에 다시 null을 넣어준다.
+            seat[row][col] = "0";           //좌석을 파악하는 배열에 다시 0을 넣어준다.
             System.out.println("예매가 취소되었습니다. 감사합니다.\n");
-        }else if(choice == 2) {
-            System.out.println("취소 하였습니다.\n\n");
-            return "";
+        }else if(choice == 2) {             //취소를 안할때
+            System.out.println("취소를 하지 않겠습니다.\n\n");
+            return "";           //함수 끝
         }
-        return "";
+        return "";              //함수 끝
     }
 }
