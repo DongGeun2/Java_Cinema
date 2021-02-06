@@ -1,4 +1,4 @@
-import java.util.Random;
+
 import java.util.Scanner;
 
 public class Cinema_Reservation {
@@ -15,6 +15,8 @@ public class Cinema_Reservation {
         scanner = new Scanner(System.in);
         userChoice = new String();
     }
+    
+    
     
     // 배열 자리 만들기 >> 빈자리면 각 배열에 0이라고 넣어줌.
     private void seatMake() {
@@ -37,31 +39,16 @@ public class Cinema_Reservation {
         
     }
     
-    // 메뉴 1번
-    public void presentSeat() {
-        
-        while(true) {
-            System.out.println("*******좌석 현황*******");
-            seatGetNumber();
-            System.out.println("---------------------");
-            System.out.println("좌석을 선택해주세요. 예)1-1");
-            System.out.println("이미 예약된 좌석은 \"예매\"라고 표시됩니다.");
-            
-            userChoice = scanner.nextLine();
-            
-            userChoiceGetSeatNumber();
-            break;
-        }
 
-    }
     
     // 예약 번호 들어오면 seat 배열 값 1로 바꿔주고 seat2 배열 값에 예약 번호 넣어줌.
     private void userChoiceGetSeatNumber() {
         for(int i = 0; i < seat.length; i++) {
             for(int j = 0; j < seat[i].length; j++) {
                 String numEqul = (i+1) + "-" + (j+1); 
-                if(seat[i][j].equals("1")&& numEqul.equals(userChoice) ) {
+                if(seat[i][j].equals("1") && numEqul.equals(userChoice)) {
                     System.out.println("이미 예매 되었습니다.");
+                    break;
                 }else if (seat[i][j].equals("0") && numEqul.equals(userChoice)){
                     System.out.println("예매 가능합니다. 예매하시겠습니까?");
                     System.out.println("네(1), 아니요(2), 초기화면(0)중 하나를 입력해주세요.");
@@ -77,34 +64,32 @@ public class Cinema_Reservation {
                         System.out.println("취소 하였습니다. 다시 예약하세요.");
                         presentSeat();
                     }else if(choice == 0) {
-                        return;
+                        break;
                     }
-                    
-                }
+               }
             }
         }
     }
     
-    // 메뉴2번
-    public void menu2() {
-        System.out.println("예매번호를 입력해주세요.");
-        String userChoiceTicket = scanner.nextLine();
+    // 메뉴 1번
+    public void presentSeat() {
         
-        for(int i = 0; i < seat.length; i++) {
-            for(int j = 0; j < seat.length; j++) {
-                if(userChoiceTicket.equals(seat2[i][j])) {
-                    System.out.printf("고객님이 예매하신 좌석은 %s-%s 입니다.",i+1,j+1);                   
-                }else {
-                    System.out.println("예매된 좌석이 없습니다. 예매번호를 확인해주세요.");
-                    return;
-                }
-
-                
+        while(true) {
+            System.out.println("*******좌석 현황*******");
+            seatGetNumber();
+            System.out.println("---------------------");
+            System.out.println("좌석을 선택해주세요. 예)1-1");
+            System.out.println("이미 예약된 좌석은 \"예매\"라고 표시됩니다.");
+            userChoice = scanner.nextLine();
+            while(!userChoice.contains("-")) {
+                System.out.println("좌석 번호를 입력해주세요");
+                userChoice = scanner.nextLine();
             }
+            userChoiceGetSeatNumber();
+            break;
         }
     }
-    
-    
+
     
     
     public void PrintTest() {
@@ -116,9 +101,9 @@ public class Cinema_Reservation {
                 if(choice == 1) {
                     presentSeat();
                 }else if(choice == 2) {
-                    selectSeatCheck();
+                    System.out.println(selectSeatCheck());
                 }else if(choice == 3) {
-                    cancleSeatCheck();
+                    System.out.println(cancleSeatCheck());
                 }
             
         }
@@ -140,9 +125,10 @@ public class Cinema_Reservation {
         if(choice == 1) {
             seat2[row][col] = "null";
             seat[row][col] = "0";
-            return "예매가 취소되었습니다. 감사합니다.";
+            System.out.println("예매가 취소되었습니다. 감사합니다.");
         }else if(choice == 2) {
-            return "취소 하였습니다.";
+            System.out.println("취소 하였습니다."); 
+            return "";
         }
         return "";
     }
@@ -162,7 +148,7 @@ public class Cinema_Reservation {
             for (int j = 0; j < seat2[i].length; j++) {
                 if(numEqul.equals(seat2[i][j])){
                     cancleSeatResult(i, j);
-                    return "";
+                    return cancleSeatResult(i, j);
                 }
             }
         }
@@ -171,13 +157,13 @@ public class Cinema_Reservation {
 
     }
 
-    //에매조회 출력 함수
+    //예매조회 출력 함수
     private void selectSeatResult(int row, int col) {
         System.out.println("고객님이 예매하신 좌석은 "+(row+1)+"-"+(col+1)+"입니다.");
     }
 
-    //예매번화 확인 함수
-    private String selectSeatCheck(){
+    //예매변화 확인 함수
+    public String selectSeatCheck(){
 
         System.out.println("예매번호를 입력해주세요.");
         String numEqul = scanner.nextLine();
@@ -194,6 +180,5 @@ public class Cinema_Reservation {
         //if문에 안걸렸을때 >> 예매 내역이 없다.
         return "예매된 내역이 없습니다...ㅜㅜ\n다시한번 확인해주세요!!\n\n";
     }
-    
-    
+
 }
